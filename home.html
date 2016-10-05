@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <title>Welcome to Group </title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script src = "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <style>
+.btn {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button:hover {background-color: #3e8e41}
+
+.button:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+</style>
+  </head>
+  <body style= "background-color: pink;">
+     <div align="center"> <h1 style="text-decoration: underline; margin-bottom:170px"> Welcome On Admin Dashboard </h1> </div>
+     <ul id="pageViews"></ul>
+      
+     <div align="center">
+       Device Id : <h1 id="bcon_Id"></h1>  </br>
+       <button type="button" class="btn btn-primary">Start</button>
+     </div>
+
+     <script>
+      $(document).ready(function(){
+        var socket = io();
+        var fetchClients;
+        var deviceId;
+        var temp_LocalStorageval;
+        console.log("device id is::", deviceId);
+        socket.on('refresh feed',function(msg){
+            console.log("message is:::",  msg);
+            $("li").remove();
+            var index = 97;
+            
+            console.log("click count type of:::", deviceId, typeof deviceId);
+            for(var i in msg) {
+              var findCnt = msg[i].click_cnt;
+              var user =  String.fromCharCode(index++);
+              if(deviceId !== null) {
+                console.log("device id and bcon id is::", typeof deviceId, deviceId, typeof msg[i].bcon_id, msg[i].bcon_id);
+                if(deviceId === msg[i].bcon_id) {
+                  $('#pageViews').append('<li>' + '<font size="4">' + '<i>' + 'User' + " " + user.toUpperCase() + " " + 'Click Count is' + " " + '</font>' + '</i>' + '=' + "  " + '<b>' +findCnt + '</b>' + '</li>');
+                }
+              }
+            }
+
+
+              
+          });
+        deviceId = sessionStorage.getItem("bcon_Id");
+        if(deviceId !== null && deviceId !== undefined) {
+          $('.btn').hide();
+          document.getElementById("bcon_Id").innerHTML = deviceId;
+        }
+        
+          $("button").click(function(){
+              $.get("http://localhost:3000/bconId", function(data, status){
+                sessionStorage.setItem("bcon_Id", data);
+                deviceId = sessionStorage.getItem("bcon_Id");
+                  document.getElementById("bcon_Id").innerHTML = data;
+                  $('.btn').hide();
+              });
+          });
+          
+      });
+    </script>
+  </body>
+  
+</html>

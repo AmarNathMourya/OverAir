@@ -1,0 +1,84 @@
+<html>
+  <head>
+    <title>Socket.io</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <script src = "http://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script>
+    $(document).ready(function(){
+          var socket = io();
+          console.log("front socket id is:", socket);
+          var increCounter = 0;
+          $("#add_status").click(function(){
+            if(increCounter === 0) {
+              var counter = 0;
+            }
+            else {
+              var counter = increCounter;
+            }
+            var x = document.cookie;
+            var yy = x.split(";");
+            var xyz = yy[0].split("=");
+            var cookieBcon = yy[1].split("=");
+            var cookieJson = {
+              "cookie_val": xyz[1]
+            }
+            console.log("browser cookie is::", cookieJson,  x);
+
+            
+            socket.emit('status added',counter, cookieJson, cookieBcon[1]);
+          });
+          socket.on('refresh feed',function(msg){
+            console.log("message is:::",  msg);
+
+              console.log("message is:::",  msg);
+              $("li").remove();
+              var index = 97;
+              for(var i in msg) {
+                var x = document.cookie;
+                var yy = x.split(";");
+                var bconIDCke = yy[1].split("=")
+                var xyz = yy[0].split("=");
+                var findCnt = msg[i].click_cnt;
+                var user =  String.fromCharCode(index++);
+                console.log("click count type of:::", findCnt, typeof findCnt);
+
+                if(bconIDCke[1] !== undefined) {
+                  if(bconIDCke[1] === msg[i].bcon_id) {
+                    $('#pageViews').append('<li>' + '<font size="4">' + '<i>' + 'User' + " " + user.toUpperCase() + " " + 'Click Count is' + " " + '</font>' + '</i>' + '=' + "  " + '<b>' +findCnt + '</b>' + '</li>');
+                  }
+                }
+                if(xyz[1] === msg[i].cookie_val) {
+                  console.log("count is::", findCnt);
+                  if(findCnt === 1)
+                  {
+                    increCounter = findCnt;
+                    console.log("no increment");
+                  }
+                  else {
+                    increCounter = findCnt;    
+                  }
+              }
+              }
+                console.log("browser and server cookie is::", xyz[1], typeof bconIDCke[1], bconIDCke[1]);
+              document.getElementById("activeBcon").innerHTML = bconIDCke[1];
+            
+          });
+
+
+    });
+
+    
+    </script>
+  </head>
+  <body>
+    <div align="center"> <h1 style="text-decoration: underline; margin-bottom:170px"> Interrupted App for Connected Clients </h1> </div>
+    <div><b><font color="green" size="6">Active BconID: <span id="activeBcon"></span></font> </b></div>
+    <ul id="pageViews"></ul>
+    <div id="comment_box" style = "padding:5%;" align="center">
+      <input type="button" id="add_status" value="Click Counter">
+    </div>
+  </body>
+  
+</html>
